@@ -1,0 +1,32 @@
+#!/usr/bin/env ruby
+
+class Wordle
+  def initialize(mask, must_include, must_exclude)
+    @mask = mask
+    @must_include = must_include
+    @must_exclude = must_exclude
+    @words = File.readlines('words.txt').map(&:chomp)
+  end
+
+  def solve
+    @words.select do |word|
+      word_letters = word.split('')
+
+      next if @must_exclude.any? { |exl| word_letters.any? { |wl| wl == exl } }
+      next unless @must_include.all? { |exl| word_letters.any? { |wl| wl != exl } }
+
+      match = true
+      @mask.split('').each_with_index do |letter, idx|
+        match = false if letter != '?' && word_letters[idx] != letter
+      end
+
+      match
+    end
+  end
+end
+
+if ARGV.length != 3
+  puts 'Usage: wordle <mask> <must_include> <must_exclude>'
+else
+  puts Wordle.new(ARGV[0].downcase, ARGV[1].downcase.split(''), ARGV[2].downcase.split('')).solve
+end
