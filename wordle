@@ -13,7 +13,7 @@ class Wordle
       word_letters = word.split('')
 
       next if @must_exclude.any? { |exl| word_letters.any? { |wl| wl == exl } }
-      next unless @must_include.all? { |exl| word_letters.any? { |wl| wl != exl } }
+      next if @must_include.all? { |exl| word_letters.all? { |wl| wl != exl } }
 
       match = true
       @mask.split('').each_with_index do |letter, idx|
